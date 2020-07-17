@@ -1,4 +1,4 @@
-# connected-cars-visual
+# connected-cars-visualization
 Plotting and animating the path of cars utilizing their aggressiveness scores and other traffic information.
 
 In this repository, I will include my Python code for plotting and animating the math of any number of cars on a road/map snapshot. I have also uploaded the resulting html files. 
