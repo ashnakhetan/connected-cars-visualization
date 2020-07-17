@@ -13,6 +13,7 @@ Features:
 
 MultiLineVisualization.ipynb : The Python code for the path of a car SHOWING history as well.
 Multi1.html : The resulting html animation.
+Gradient1.html : Same depiction with a smooth transitioning of colors.
 
 CurrentPointVisualization.ipynb : The Python code for the path of a car WITHOUT history.
 Current1.html : The resulting html animation.
