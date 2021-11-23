@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Animate a point along a route</title>
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v1.11.1/mapbox-gl.js"></script>
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v1.11.1/mapbox-gl.css"
+      rel="stylesheet"
+    />
+    <!-- <link
+      rel="stylesheet"
+      href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/themes/css/cartodb.css"
+    /> -->
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+    <style>
+      body {
+        font-family: Arial;
+      }
+
+      /* Style the tab */
+      .tab {
+        overflow: hidden;
+        border: 1px solid #ccc;
+        background-color: #f1f1f1;
+      }
+
+      /* Style the buttons inside the tab */
+      .tab button {
+        background-color: inherit;
+        float: left;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 14px 16px;
+        transition: 0.3s;
+        font-size: 17px;
+      }
+
+      /* Change background color of buttons on hover */
+      .tab button:hover {
+        background-color: #ddd;
+      }
+
+      /* Create an active/current tablink class */
+      .tab button.active {
+        background-color: #ccc;
+      }
+
+      /* Style the tab content */
+      .tabcontent {
+        display: none;
+        padding: 6px 12px;
+        border: 1px solid #ccc;
+        border-top: none;
+      }
+    </style>
+    <!-- <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script> -->
+  </head>
+
+  <body>
+    <style type="text/css">
+      #info {
+        font: 400 16px/25px "Helvetica Neue", Arial, Helvetica, sans-serif;
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        width: 50%;
+        overflow: auto;
+        border-right: teal;
+        border-radius: 5;
+        border-color: teal;
+        background: rgba(255, 255, 255, 0.8);
+      }
+    </style>
+    <style>
+      #popup {
+        display: none;
+        background: #efefef;
+        border: 1px solid black;
+        width: 450;
+        height: 250;
+        z-index: 20;
+        position: absolute;
+      }
+    </style>
+
+    <body>
+      <div id="popup">
+        <iframe
+          src="/Users/ashnakhetan/Desktop/Ashna/ConnectedCars/USEsingleHis.html"
+          width="450"
+          height="250"
+          seamless
+        ></iframe>
+        <button onclick="document.getElementById('popup').style.display='none'">
+          Hide
+        </button>
+      </div>
+    </body>
+    <div id="map"></div>
+    <div id="info"></div>
+    <div id="popup"></div>
+
+    <style>
+      .overlay {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+      }
+
+      .overlay button {
+        font: 600 12px/20px "Helvetica Neue", Arial, Helvetica, sans-serif;
+        background-color: #3386c0;
+        color: #fff;
+        display: inline-block;
+        margin: 0;
+        padding: 10px 20px;
+        border: none;
+        cursor: pointer;
+        border-radius: 3px;
+      }
+
+      .overlay button:hover {
+        background-color: #4ea0da;
+      }
+    </style>
+    <script
+      src="https://api.tiles.mapbox.com/mapbox.js/plugins/turf/v2.0.0/turf.min.js"
+      charset="utf-8"
+    ></script>
+
+    <!-- <div id="map"></div> -->
+    <!-- <div class="overlay">
+      <button id="replay">Replay</button>
+    </div> -->
+
+    <script>
+      mapboxgl.accessToken =
+        "pk.eyJ1IjoiYXNobmFrMDMiLCJhIjoiY2s5OTdiYW1wMXBhbDNlcGcwY2plcjhuMyJ9.gMhq8HNZMti-CWHXP3-lTA";
+      var map = new mapboxgl.Map({
+        container: "map",
+        style: "mapbox://styles/mapbox/satellite-v9",
+        center: [-83.6918559, 42.3053914],
+        zoom: 18,
+      });
+      // map.on('load', function () {
+
+      aggression = "example value";
+      lane = 3;
+
+      map.on("click", "point", function (e) {
+        //window.setInterval(myFunction, 1000);
+        var l = e.lngLat.wrap();
+        console.log("Hi this is Ashna!!!!!");
+        console.log(e);
+        document.getElementById("info").innerHTML =
+          l +
+          "<br />" +
+          "<b>Aggression: </b>" +
+          aggression +
+          "<br />" +
+          "<b>Lane: </b>" +
+          lane;
+        console.log(l.lng);
+
+        //find the index of the clicked point in coord array
+        for (var i = 0; i < 98; i++) {
+          var string1 = l.lng;
+          var result = string1.toString().localeCompare(coord[i][0]);
+          if (result == -1) {
+            console.log(result);
+            console.log(coord[i][0]);
+            break;
+          }
+        }
+
+        // function myFunction() {
+        //var i = 1;
+        //console.log(coord[i][0]);
+
+        setInterval(function () {
+          var l = "<b>Lng, Lat: <b>" + coord[i];
+
+          document.getElementById("info").innerHTML =
+            l +
+            "<br />" +
+            "<b>Aggression: </b>" +
+            aggression +
+            "<br />" +
+            "<b>Lane: </b>" +
+            lane;
+          i++;
+          if (i >= 96) {
+            var l = "<b>Lng, Lat: <b>" + coord[96];
+
+            document.getElementById("info").innerHTML =
+              l +
+              "<br />" +
+              "<b>Aggression: </b>" +
+              aggression +
+              "<br />" +
+              "<b>Lane: </b>" +
+              lane;
+            return false;
+          }
+        }, 80);
+
+        // e.point is the x, y coordinates of the mousemove event relative
+        // to the top-left corner of the map
+        //   JSON.stringify(e.point) +
+        //   "<br />" +
+        // e.lngLat is the longitude, latitude geographical position of the event
+        // "<b>Lat, Lng: </b> " +
+        // JSON.stringify(e.lngLat.wrap()) +
+        // "<br />" +
+        // "<b>Aggression: </b>" +
+        // aggression +
+        // "<br />" +
+        // "<b>Lane: </b>" +
+        // lane +
+        // "<br />";
+        // }
+        // function myStopFunction() {
+        //   clearInterval(timer);
+        // }
+      });
+
+      map.on("click", "point", function (e) {
+        document.getElementById("popup").style.display = "block";
+      });
+
+      var origin = [-83.6910906, 42.3056029];
+
+      var destination = [-83.6926729, 42.3051628];
+
+      // A simple line from origin to destination.
+      coord = [
+        [-83.6910906, 42.3056029],
+        [-83.6911031, 42.3055997],
+        [-83.6911155, 42.3055963],
+        [-83.6911281, 42.3055931],
+        [-83.6911406, 42.3055895],
+        [-83.691153, 42.3055859],
+        [-83.6911657, 42.3055823],
+        [-83.6911912, 42.305575399999995],
+        [-83.6912171, 42.3055684],
+        [-83.69123, 42.3055645],
+        [-83.691243, 42.3055612],
+        [-83.6912561, 42.3055577],
+        [-83.6912693, 42.3055541],
+        [-83.6912822, 42.3055507],
+        [-83.6912952, 42.3055471],
+        [-83.6913084, 42.3055433],
+        [-83.6913216, 42.3055396],
+        [-83.6913349, 42.3055362],
+        [-83.6913482, 42.305532299999996],
+        [-83.6913751, 42.3055248],
+        [-83.6913887, 42.305521],
+        [-83.6914023, 42.3055172],
+        [-83.691416, 42.3055132],
+        [-83.6914299, 42.3055098],
+        [-83.6914437, 42.3055062],
+        [-83.6914575, 42.305502399999995],
+        [-83.6914852, 42.3054947],
+        [-83.6914992, 42.3054908],
+        [-83.691541, 42.3054796],
+        [-83.6915549, 42.3054755],
+        [-83.6915689, 42.3054717],
+        [-83.6915829, 42.3054677],
+        [-83.6915969, 42.3054638],
+        [-83.6916252, 42.3054562],
+        [-83.6916392, 42.3054523],
+        [-83.6916532, 42.3054481],
+        [-83.6916675, 42.3054442],
+        [-83.6916816, 42.3054402],
+        [-83.6916959, 42.3054364],
+        [-83.6917101, 42.3054323],
+        [-83.6917245, 42.3054285],
+        [-83.6917389, 42.3054244],
+        [-83.6917534, 42.3054203],
+        [-83.6917678, 42.3054164],
+        [-83.6917824, 42.3054122],
+        [-83.691797, 42.3054079],
+        [-83.6918117, 42.3054039],
+        [-83.6918263, 42.3053996],
+        [-83.6918411, 42.3053953],
+        [-83.6918559, 42.3053914],
+        [-83.6918706, 42.3053872],
+        [-83.6918853, 42.3053829],
+        [-83.6919001, 42.3053787],
+        [-83.6919148, 42.305374799999996],
+        [-83.6919296, 42.3053704],
+        [-83.6919444, 42.3053662],
+        [-83.6919593, 42.3053623],
+        [-83.691974, 42.305358],
+        [-83.691989, 42.3053541],
+        [-83.6920038, 42.30535],
+        [-83.6920187, 42.3053458],
+        [-83.6920336, 42.3053417],
+        [-83.6920633, 42.3053333],
+        [-83.6920783, 42.3053292],
+        [-83.6920934, 42.3053251],
+        [-83.6921086, 42.3053209],
+        [-83.6921237, 42.3053166],
+        [-83.6921388, 42.3053123],
+        [-83.6921541, 42.3053081],
+        [-83.6921693, 42.3053036],
+        [-83.6921847, 42.3052995],
+        [-83.6922001, 42.3052952],
+        [-83.6922155, 42.305290899999996],
+        [-83.6922309, 42.3052868],
+        [-83.6922621, 42.3052778],
+        [-83.6922777, 42.3052735],
+        [-83.6922934, 42.3052692],
+        [-83.6923091, 42.305264799999996],
+        [-83.692325, 42.3052602],
+        [-83.6923407, 42.3052558],
+        [-83.6923566, 42.3052511],
+        [-83.6923725, 42.3052464],
+        [-83.6923887, 42.305242],
+        [-83.6924049, 42.305237299999995],
+        [-83.6924212, 42.3052327],
+        [-83.6924374, 42.3052282],
+        [-83.6924536, 42.3052233],
+        [-83.6924701, 42.3052189],
+        [-83.6924865, 42.305214299999996],
+        [-83.6925031, 42.3052098],
+        [-83.6925199, 42.3052051],
+        [-83.6925365, 42.3052004],
+        [-83.6925533, 42.3051956],
+        [-83.6925702, 42.3051909],
+        [-83.6925871, 42.3051862],
+        [-83.6926211, 42.3051766],
+        [-83.6926382, 42.3051721],
+        [-83.6926555, 42.3051673],
+      ];
+      var route = {
+        type: "FeatureCollection",
+        features: [
+          {
+            type: "Feature",
+            properties: {},
+            geometry: {
+              type: "LineString",
+              coordinates: coord,
+            },
+          },
+        ],
+      };
+
+      // A single point that animates along the route.
+      // Coordinates are initially set to origin.
+      var point = {
+        type: "FeatureCollection",
+        features: [
+          {
+            type: "Feature",
+            properties: {},
+            geometry: {
+              type: "Point",
+              coordinates: origin,
+            },
+          },
+        ],
+      };
+
+      // Calculate the distance in kilometers between route start/end point.
+      var lineDistance = turf.lineDistance(route.features[0], "kilometers");
+
+      var arc = [];
+
+      // Number of steps to use in the arc and animation, more steps means
+      // a smoother arc and animation, but too many steps will result in a
+      // low frame rate
+      var steps = 500;
+
+      // Draw an arc between the `origin` & `destination` of the two points
+      for (var i = 0; i < lineDistance; i += lineDistance / steps) {
+        var segment = turf.along(route.features[0], i, "kilometers");
+        arc.push(segment.geometry.coordinates);
+      }
+
+      // Update the route with calculated arc coordinates
+      route.features[0].geometry.coordinates = arc;
+
+      // Used to increment the value of the point measurement against the route.
+      var counter = 0;
+
+      map.on("load", function () {
+        // Add a source and layer displaying a point which will be animated in a circle.
+        map.addSource("route", {
+          type: "geojson",
+          data: route,
+        });
+
+        map.addSource("point", {
+          type: "geojson",
+          data: point,
+        });
+
+        // while (point["coordinates"] == '[-83.6910906, 42.3056029]') or (point["coordinates"] == '[-83.6911031, 42.3055997]'){
+        //   map.addLayer({
+        //     id: "route",
+        //     source: "route",
+        //     type: "line",
+        //     paint: {
+        //       "line-width": 2,
+        //       "line-color": "red",
+        //     },
+        //   });
+        // }
+        map.addLayer({
+          id: "route",
+          source: "route",
+          type: "line",
+          paint: {
+            "line-width": 2,
+            "line-color":
+              //"transparent",
+              "#007cbf",
+          },
+        });
+
+        map.addLayer({
+          id: "point",
+          source: "point",
+          type: "symbol",
+          layout: {
+            "icon-image": "car-15",
+            "icon-rotate": ["get", "bearing"],
+            "icon-rotation-alignment": "map",
+            "icon-allow-overlap": true,
+            "icon-ignore-placement": true,
+          },
+        });
+
+        function animate() {
+          // Update point geometry to a new position based on counter denoting
+          // the index to access the arc.
+          point.features[0].geometry.coordinates =
+            route.features[0].geometry.coordinates[counter];
+
+          // Calculate the bearing to ensure the icon is rotated to match the route arc
+          // The bearing is calculate between the current point and the next point, except
+          // at the end of the arc use the previous point and the current point
+          point.features[0].properties.bearing = turf.bearing(
+            turf.point(
+              route.features[0].geometry.coordinates[
+                counter >= steps ? counter - 1 : counter
+              ]
+            ),
+            turf.point(
+              route.features[0].geometry.coordinates[
+                counter >= steps ? counter : counter + 1
+              ]
+            )
+          );
+
+          // Update the source with this new data.
+          map.getSource("point").setData(point);
+
+          // Request the next frame of animation so long the end has not been reached.
+          if (counter < steps) {
+            requestAnimationFrame(animate);
+          }
+
+          counter = counter + 1;
+        }
+
+        // document
+        //   .getElementById("replay")
+        //   .addEventListener("click", function () {
+        //     // Set the coordinates of the original point back to origin
+        //     point.features[0].geometry.coordinates = origin;
+
+        //     // Update the source layer
+        //     map.getSource("point").setData(point);
+
+        //     // Reset the counter
+        //     counter = 0;
+
+        //     // Restart the animation.
+        //     animate(counter);
+        //   });
+
+        // Start the animation.
+        animate(counter);
+      });
+    </script>
+  </body>
+</html>
